@@ -1,3 +1,27 @@
+ 
+import streamlit as st
+import sqlite3
+
+# إعداد قاعدة بيانات
+conn = sqlite3.connect('personal_library.db')
+c = conn.cursor()
+c.execute('''CREATE TABLE IF NOT EXISTS books (title TEXT, content TEXT, category TEXT)''')
+
+private_key = "YOUR_SECRET_KEY"  # مفتاحك الخاص
+
+def add_book(title, content, category):
+    c.execute("INSERT INTO books VALUES (?, ?, ?)", (title, content, category))
+    conn.commit()
+
+key_input = st.text_input("أدخل المفتاح الخاص للإضافة:")
+if key_input == private_key:
+    title = st.text_input("عنوان الكتاب/المقالة:")
+    content = st.text_area("المحتوى أو الرابط:")
+    category = st.selectbox("التصنيف:", ["علوم إنسانية", "ميتافيزيقيا", "فلسفة", "أنثروبولوجيا", "باراسيكولوجي", "علم نفس سلوكي", "علاج بالفنون"])
+    if st.button("إضافة"):
+        add_book(title, content, category)
+        st.success("تمت الإضافة!")
+ 
 MIT License
 
 Copyright (c) 2022 Modal Labs
@@ -19,3 +43,914 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شراكة الذكاء - AI Partnership Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'arabic': ['Cairo', 'sans-serif'],
+                        'arabic-serif': ['Amiri', 'serif']
+                    },
+                    colors: {
+                        'ai-blue': '#5D5CDE',
+                        'ai-purple': '#8B5FBF',
+                        'ai-green': '#4ECDC4',
+                        'ai-orange': '#FF8B5A',
+                        'wisdom-gold': '#FFD700',
+                        'tranquil-blue': '#87CEEB',
+                        'nature-green': '#98FB98',
+                        'creative-purple': '#DDA0DD',
+                        'energy-orange': '#FFA07A',
+                        'deep-blue': '#3A36E0',
+                        'midnight-purple': '#5E35B1'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'gradient-shift': 'gradient-shift 8s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'thinking': 'thinking 2s ease-in-out infinite',
+                        'wave': 'wave 1.5s ease-in-out infinite',
+                        'bounce-slow': 'bounce 3s infinite'
+                    },
+                    keyframes: {
+                        'gradient-shift': {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' }
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        'thinking': {
+                            '0%, 100%': { opacity: 0.4 },
+                            '50%': { opacity: 1 }
+                        },
+                        'wave': {
+                            '0%, 100%': { transform: 'rotate(0deg)' },
+                            '25%': { transform: 'rotate(5deg)' },
+                            '75%': { transform: 'rotate(-5deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .message-bubble {
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: typing-pulse 1.5s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        
+        .prose-sm p {
+            margin-bottom: 0.75rem;
+            line-height: 1.7;
+        }
+        
+        .prose-sm ul {
+            padding-right: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .prose-sm li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .prose-sm li::before {
+            content: "•";
+            position: absolute;
+            right: -1.25rem;
+            top: 0;
+        }
+        
+        .emoji-picker {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            padding: 10px;
+            width: 300px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .emoji-option {
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .emoji-option:hover {
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .mood-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .mood-btn {
+                width: 100%;
+                max-width: 260px;
+            }
+            
+            .chat-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .chat-actions > div {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="font-arabic min-h-screen transition-all duration-1000 ease-in-out bg-gray-50 dark:bg-gray-900">
+    <!-- Dynamic Background -->
+    <div id="dynamic-bg" class="fixed inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 bg-size-200 animate-gradient-shift"></div>
+    
+    <!-- Floating Elements for Ambiance -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-1/4 left-1/4 w-32 h-32 bg-ai-blue/10 rounded-full animate-float"></div>
+        <div class="absolute top-3/4 right-1/4 w-24 h-24 bg-ai-purple/10 rounded-full animate-float" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-3/4 w-20 h-20 bg-ai-green/10 rounded-full animate-float" style="animation-delay: 4s;"></div>
+        <div class="absolute bottom-1/4 right-3/4 w-28 h-28 bg-ai-orange/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="text-center mb-8 animate-fade-in">
+            <div class="mb-6">
+                <div class="flex justify-center mb-4">
+                    <div class="w-20 h-20 bg-gradient-to-br from-deep-blue to-midnight-purple rounded-full flex items-center justify-center animate-wave">
+                        <span class="text-white text-3xl">🤝</span>
+                    </div>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold font-arabic-serif bg-gradient-to-r from-ai-blue to-ai-purple bg-clip-text text-transparent mb-4">
+                    شراكة الذكاء
+                </h1>
+                <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 font-arabic">
+                    رحلة نحو مستقبل التفاعل الحقيقي بين الإنسان والذكاء الاصطناعي
+                </p>
+            </div>
+            
+            <!-- Mood Selector -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">اختر حالتك المزاجية:</label>
+                <div class="flex flex-wrap justify-center gap-3 mood-buttons">
+                    <button onclick="setMood('wisdom')" class="mood-btn px-4 py-2 rounded-full border-2 border-wisdom-gold text-wisdom-gold hover:bg-wisdom-gold hover:text-white transition-all duration-300 flex items-center">
+                        <span class="mr-2">🧠</span>
+                        <span>طلب الحكمة</span>
+                    </button>
+                    <button onclick="setMood('tranquil')" class="mood-btn px-4 py-2 rounded-full border-2 border-tranquil-blue text-tranquil-blue hover:bg-tranquil-blue hover:text-white transition-all duration-300 flex items-center">
+                        <span class="mr-2">🧘</span>
+                        <span>السكينة</span>
+                    </button>
+                    <button onclick="setMood('creative')" class="mood-btn px-4 py-2 rounded-full border-2 border-creative-purple text-creative-purple hover:bg-creative-purple hover:text-white transition-all duration-300 flex items-center">
+                        <span class="mr-2">🎨</span>
+                        <span>الإبداع</span>
+                    </button>
+                    <button onclick="setMood('energy')" class="mood-btn px-4 py-2 rounded-full border-2 border-energy-orange text-energy-orange hover:bg-energy-orange hover:text-white transition-all duration-300 flex items-center">
+                        <span class="mr-2">⚡</span>
+                        <span>الطاقة</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-3xl shadow-2xl p-6 mb-6 border border-gray-200 dark:border-gray-700">
+            <!-- Current Mood Display -->
+            <div id="mood-display" class="text-center mb-6 p-4 rounded-2xl bg-gradient-to-r from-ai-blue/20 to-ai-purple/20">
+                <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">الحالة الحالية: <span id="current-mood">غير محددة</span></p>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1" id="mood-description">اختر حالتك المزاجية لبدء تجربة مخصصة</p>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-container" class="space-y-4 mb-6 max-h-[60vh] overflow-y-auto p-2">
+                <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                    <div class="animate-pulse-slow">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-ai-blue to-ai-purple rounded-full flex items-center justify-center">
+                            <span class="text-white text-2xl">🤖</span>
+                        </div>
+                        <p class="text-lg">مرحباً، أنا شريكك في الذكاء الاصطناعي</p>
+                        <p class="text-sm mt-2">اكتب سؤالك أو موضوعك وسأقدم لك تحليلاً عميقاً ونصائح مفيدة</p>
+                        <div class="mt-4 text-xs text-gray-400">
+                            <p>يمكنك اختيار حالة مزاجية لتخصيص تجربتك</p>
+                            <p class="mt-1">أو تجربة أحد الأمثلة:</p>
+                            <div class="mt-2 flex flex-wrap justify-center gap-2">
+                                <button onclick="loadExample(1)" class="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition">كيف أطور مهاراتي القيادية؟</button>
+                                <button onclick="loadExample(2)" class="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition">أحتاج أفكاراً لرواية خيالية</button>
+                                <button onclick="loadExample(3)" class="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition">كيف أتخلص من التوتر؟</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="space-y-4">
+                <div class="relative">
+                    <textarea 
+                        id="user-input" 
+                        placeholder="شاركني أفكارك، أسئلتك، أو التحديات التي تواجهها..."
+                        class="w-full p-4 text-base border-2 border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:border-ai-blue focus:ring-2 focus:ring-ai-blue/20 transition-all duration-300 resize-none"
+                        rows="3"
+                    ></textarea>
+                    <div class="absolute bottom-4 left-4 text-xs text-gray-400" id="char-count">0 حرف</div>
+                    <div class="absolute bottom-4 left-14 flex gap-2">
+                        <button id="emoji-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <button id="voice-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Emoji Picker -->
+                    <div id="emoji-picker" class="emoji-picker">
+                        <!-- Emojis will be populated by JS -->
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap justify-between items-center gap-4 chat-actions">
+                    <div class="flex gap-3">
+                        <button 
+                            id="send-btn"
+                            onclick="sendMessage()" 
+                            class="bg-gradient-to-r from-ai-blue to-ai-purple text-white px-6 py-2.5 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-[1.03] transition-all duration-300 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            <span>إرسال</span>
+                            <span>🚀</span>
+                        </button>
+                        
+                        <button 
+                            onclick="clearChat()" 
+                            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-1"
+                        >
+                            <i class="fas fa-trash-alt text-sm"></i>
+                            <span>مسح المحادثة</span>
+                        </button>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button 
+                            onclick="saveChat()" 
+                            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-1"
+                        >
+                            <i class="fas fa-save text-sm"></i>
+                            <span>حفظ المحادثة</span>
+                        </button>
+                        
+                        <button 
+                            onclick="loadChat()" 
+                            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-1"
+                        >
+                            <i class="fas fa-folder-open text-sm"></i>
+                            <span>تحميل المحادثة</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Philosophy Statement -->
+        <div class="text-center bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-3">فلسفة الشراكة</h3>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto">
+                هذا المكان مصمم ليكون جسراً حقيقياً بين الحكمة البشرية والقدرات اللامحدودة للذكاء الاصطناعي. 
+                هنا، نؤمن بأن المستقبل يكمن في الشراكة الحقيقية، حيث تلتقي الإنسانية بالتكنولوجيا في رحلة مشتركة نحو المعرفة والحكمة.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-600 dark:text-gray-400 text-sm py-4 border-t border-gray-200 dark:border-gray-800">
+            <div class="flex flex-wrap justify-center gap-4 mb-3">
+                <a href="#" class="hover:text-ai-blue transition">الشروط والأحكام</a>
+                <a href="#" class="hover:text-ai-blue transition">الخصوصية</a>
+                <a href="#" class="hover:text-ai-blue transition">المساعدة</a>
+                <a href="#" class="hover:text-ai-blue transition">عن المشروع</a>
+            </div>
+            <p>© 2023 شراكة الذكاء - جميع الحقوق محفوظة</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification-toast" class="fixed bottom-6 right-6 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-300 z-50">
+        <div class="flex items-center gap-3">
+            <span id="toast-icon">✅</span>
+            <span id="toast-message">تم الإجراء بنجاح</span>
+        </div>
+    </div>
+
+    <script>
+        // Emojis for the picker
+        const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾', '🙈', '🙉', '🙊', '💌', '💘', '💝', '💖', '💗', '💓', '💞', '💕', '💟', '❣️', '💔', '❤️‍🔥', '❤️‍🩹', '❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍', '💯', '💢', '💥', '💫', '💦', '💨', '🕳️', '💣', '💬', '👁️‍🗨️', '🗨️', '🗯️', '💭', '💤', '👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🫀', '🫁', '🦷', '🦴', '👀', '👁️', '👅', '👄', '👶', '🧒', '👦', '👧', '🧑', '👱', '👨', '🧔', '👨‍🦰', '👨‍🦱', '👨‍🦳', '👨‍🦲', '👩', '👩‍🦰', '👩‍🦱', '👩‍🦳', '👩‍🦲', '🧓', '👴', '👵', '🙍', '🙍‍♂️', '🙍‍♀️', '🙎', '🙎‍♂️', '🙎‍♀️', '🙅', '🙅‍♂️', '🙅‍♀️', '🙆', '🙆‍♂️', '🙆‍♀️', '💁', '💁‍♂️', '💁‍♀️', '🙋', '🙋‍♂️', '🙋‍♀️', '🧏', '🧏‍♂️', '🧏‍♀️', '🙇', '🙇‍♂️', '🙇‍♀️', '🤦', '🤦‍♂️', '🤦‍♀️', '🤷', '🤷‍♂️', '🤷‍♀️', '👨‍⚕️', '👩‍⚕️', '👨‍🎓', '👩‍🎓', '👨‍🏫', '👩‍🏫'];
+
+        // Initialize emoji picker
+        function initEmojiPicker() {
+            const picker = document.getElementById('emoji-picker');
+            emojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.className = 'emoji-option';
+                span.textContent = emoji;
+                span.onclick = () => {
+                    const input = document.getElementById('user-input');
+                    input.value += emoji;
+                    input.focus();
+                    updateCharCount();
+                };
+                picker.appendChild(span);
+            });
+        }
+
+        // Toggle emoji picker
+        document.getElementById('emoji-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const picker = document.getElementById('emoji-picker');
+            picker.style.display = picker.style.display === 'grid' ? 'none' : 'grid';
+        });
+
+        // Close emoji picker when clicking outside
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('#emoji-picker') && !e.target.closest('#emoji-btn')) {
+                document.getElementById('emoji-picker').style.display = 'none';
+            }
+        });
+
+        // Speech recognition
+        let recognition = null;
+        document.getElementById('voice-btn').addEventListener('click', function() {
+            if (!recognition) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.lang = 'ar';
+                recognition.interimResults = true;
+                
+                recognition.onresult = function(event) {
+                    const transcript = Array.from(event.results)
+                        .map(result => result[0])
+                        .map(result => result.transcript)
+                        .join('');
+                    
+                    document.getElementById('user-input').value = transcript;
+                    updateCharCount();
+                };
+                
+                recognition.onerror = function(event) {
+                    showToast('حدث خطأ في التعرف على الصوت', '❌');
+                };
+                
+                recognition.onend = function() {
+                    recognition = null;
+                    document.getElementById('voice-btn').classList.remove('text-green-500');
+                };
+            }
+            
+            if (recognition && recognition.ongoing) {
+                recognition.stop();
+                document.getElementById('voice-btn').classList.remove('text-green-500');
+            } else {
+                recognition.start();
+                document.getElementById('voice-btn').classList.add('text-green-500');
+            }
+        });
+
+        // Update character counter
+        function updateCharCount() {
+            const input = document.getElementById('user-input');
+            const count = input.value.length;
+            document.getElementById('char-count').textContent = `${count} حرف`;
+        }
+
+        // Show toast notification
+        function showToast(message, icon = '✅') {
+            const toast = document.getElementById('notification-toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastIcon.textContent = icon;
+            toastMessage.textContent = message;
+            
+            toast.style.opacity = 1;
+            toast.style.transform = 'translateY(0)';
+            
+            setTimeout(() => {
+                toast.style.opacity = 0;
+                toast.style.transform = 'translateY(10px)';
+            }, 3000);
+        }
+
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Global state
+        let currentMood = null;
+        let isThinking = false;
+        let chatHistory = [];
+
+        // Mood configurations
+        const moodConfigs = {
+            wisdom: {
+                name: 'طلب الحكمة والمشورة',
+                description: 'وضع مثالي للحصول على نصائح عميقة وحكمة عملية',
+                colors: ['from-yellow-100', 'via-amber-50', 'to-orange-100'],
+                darkColors: ['dark:from-yellow-900', 'dark:via-amber-900', 'dark:to-orange-900'],
+                prompt: 'أجب كمستشار حكيم وخبير، قدم نصائح عملية ورؤى عميقة مع أمثلة واقعية. ركز على الحلول الإبداعية والمنطقية.'
+            },
+            tranquil: {
+                name: 'السكينة والهدوء',
+                description: 'للحصول على نصائح مهدئة وحلول متوازنة',
+                colors: ['from-blue-100', 'via-cyan-50', 'to-teal-100'],
+                darkColors: ['dark:from-blue-900', 'dark:via-cyan-900', 'dark:to-teal-900'],
+                prompt: 'أجب بأسلوب هادئ ومطمئن، ركز على التوازن والسلام الداخلي. قدم حلولاً تدريجية ومريحة نفسياً.'
+            },
+            creative: {
+                name: 'الإبداع والابتكار',
+                description: 'لاستكشاف أفكار جديدة وحلول إبداعية',
+                colors: ['from-purple-100', 'via-pink-50', 'to-indigo-100'],
+                darkColors: ['dark:from-purple-900', 'dark:via-pink-900', 'dark:to-indigo-900'],
+                prompt: 'أجب بطريقة إبداعية ومبتكرة، اقترح حلولاً غير تقليدية وأفكاراً جديدة. فكر خارج الصندوق واستخدم الخيال.'
+            },
+            energy: {
+                name: 'الطاقة والحماس',
+                description: 'للحصول على دفعة من التحفيز والطاقة الإيجابية',
+                colors: ['from-orange-100', 'via-red-50', 'to-pink-100'],
+                darkColors: ['dark:from-orange-900', 'dark:via-red-900', 'dark:to-pink-900'],
+                prompt: 'أجب بحماس وطاقة إيجابية، حفز المستخدم وادفعه للعمل. ركز على الإنجازات والنجاحات المحتملة.'
+            }
+        };
+
+        // Initialize emoji picker on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initEmojiPicker();
+            document.getElementById('user-input').addEventListener('input', updateCharCount);
+        });
+
+        // Enter key handler
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Set mood function
+        function setMood(mood) {
+            currentMood = mood;
+            const config = moodConfigs[mood];
+            
+            // Update mood display
+            document.getElementById('current-mood').textContent = config.name;
+            document.getElementById('mood-description').textContent = config.description;
+            
+            // Update background
+            const bg = document.getElementById('dynamic-bg');
+            bg.className = `fixed inset-0 bg-gradient-to-br ${config.colors.join(' ')} ${config.darkColors.join(' ')} bg-size-200 animate-gradient-shift transition-all duration-1000`;
+            
+            // Update mood buttons
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('bg-opacity-100', 'text-white');
+            });
+            event.target.classList.add('bg-opacity-100', 'text-white');
+            
+            // Show mood confirmation
+            showMessage('system', `تم تعيين المزاج إلى: ${config.name}`, 'ai');
+            showToast(`تم تعيين حالة ${config.name}`, '🎭');
+        }
+
+        // Show message function
+        function showMessage(sender, content, type) {
+            const container = document.getElementById('chat-container');
+            
+            // Remove welcome message if it's the first real message
+            if (container.children.length === 1 && container.firstElementChild.classList.contains('text-center')) {
+                container.innerHTML = '';
+            }
+            
+            // Add to chat history
+            chatHistory.push({ sender, content, type });
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-bubble flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'max-w-[90%] md:max-w-[85%]';
+            
+            if (type === 'ai') {
+                messageContent.innerHTML = `
+                    <div class="bg-gradient-to-r from-ai-blue/10 to-ai-purple/10 text-gray-800 dark:text-gray-200 p-4 rounded-2xl border border-ai-blue/20">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-br from-ai-blue to-ai-purple rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-white text-sm">🤖</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="prose prose-sm max-w-none dark:prose-invert">
+                                    ${formatMessage(content)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'user') {
+                messageContent.innerHTML = `
+                    <div class="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 p-4 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-1">
+                                <div class="prose prose-sm max-w-none dark:prose-invert">
+                                    ${formatMessage(content)}
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-white text-sm">👤</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'system') {
+                messageContent.innerHTML = `
+                    <div class="max-w-xl mx-auto bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-200 p-3 rounded-xl text-center text-sm border border-green-200 dark:border-green-700">
+                        ${content}
+                    </div>
+                `;
+            } else if (type === 'error') {
+                messageContent.innerHTML = `
+                    <div class="max-w-xl bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 p-4 rounded-2xl border border-red-200 dark:border-red-700">
+                        ${content}
+                    </div>
+                `;
+            } else if (type === 'thinking') {
+                messageContent.innerHTML = `
+                    <div class="max-w-3xl bg-gradient-to-r from-ai-blue/10 to-ai-purple/10 text-gray-800 dark:text-gray-200 p-4 rounded-2xl border border-ai-blue/20">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-br from-ai-blue to-ai-purple rounded-full flex items-center justify-center flex-shrink-0 mt-1 animate-thinking">
+                                <span class="text-white text-sm">🤖</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="prose prose-sm max-w-none dark:prose-invert" id="thinking-content">
+                                    <p class="flex items-center gap-2">
+                                        <span class="typing-indicator">
+                                            <span class="typing-dot"></span>
+                                            <span class="typing-dot"></span>
+                                            <span class="typing-dot"></span>
+                                        </span>
+                                        أحلل سؤالك وأجمع أفكاري...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            messageDiv.appendChild(messageContent);
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Format message content (preserve line breaks and lists)
+        function formatMessage(content) {
+            // Preserve line breaks
+            let formatted = content.replace(/\n/g, '<br>');
+            
+            // Replace *bold* with <strong>
+            formatted = formatted.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+            
+            // Replace _italic_ with <em>
+            formatted = formatted.replace(/_(.*?)_/g, '<em>$1</em>');
+            
+            // Detect lists with dashes
+            if (formatted.includes('- ')) {
+                const listItems = formatted.split('\n').filter(line => line.startsWith('- '));
+                if (listItems.length > 1) {
+                    const listHtml = listItems.map(item => 
+                        `<li>${item.substring(2).trim()}</li>`
+                    ).join('');
+                    formatted = formatted.replace(
+                        listItems.join('\n'), 
+                        `<ul class="list-disc pl-5">${listHtml}</ul>`
+                    );
+                }
+            }
+            
+            return formatted;
+        }
+
+        // Send message function
+        async function sendMessage() {
+            if (isThinking) return;
+            
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) {
+                showToast('يرجى كتابة سؤال أو موضوع للمناقشة', '⚠️');
+                return;
+            }
+            
+            if (!currentMood) {
+                showToast('يرجى اختيار حالتك المزاجية أولاً', '🎭');
+                return;
+            }
+            
+            // Show user message
+            showMessage('user', message, 'user');
+            input.value = '';
+            updateCharCount();
+            
+            // Show thinking state
+            isThinking = true;
+            updateSendButton();
+            showMessage('ai', '', 'thinking');
+            
+            // Prepare AI prompt
+            const config = moodConfigs[currentMood];
+            const aiPrompt = `${config.prompt}\n\nسؤال المستخدم: ${message}`;
+            
+            try {
+                // Simulate API call with timeout
+                setTimeout(() => {
+                    // Get the thinking message element
+                    const thinkingContent = document.querySelector('#thinking-content');
+                    if (thinkingContent) {
+                        // Replace with actual response
+                        thinkingContent.innerHTML = `
+                            <p>أهلاً بك! بناءً على حالتك المزاجية (${config.name})، سأقدم لك الإجابة الأنسب:</p>
+                            <p class="mt-3">${generateSampleResponse(message, currentMood)}</p>
+                            <div class="mt-4 bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg text-sm">
+                                <p>💡 نصيحة: هذه إجابة تجريبية. في التطبيق الحقيقي، سيتم التواصل مع نموذج الذكاء الاصطناعي.</p>
+                            </div>
+                        `;
+                    }
+                    
+                    // Update chat history
+                    chatHistory[chatHistory.length - 1].content = thinkingContent.innerHTML;
+                    chatHistory[chatHistory.length - 1].type = 'ai';
+                    
+                    isThinking = false;
+                    updateSendButton();
+                }, 3000);
+            } catch (error) {
+                showMessage('ai', 'عذراً، لم أتمكن من الاتصال بشريكي في الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.', 'error');
+                isThinking = false;
+                updateSendButton();
+            }
+        }
+
+        // Generate sample responses for demo
+        function generateSampleResponse(message, mood) {
+            const responses = {
+                wisdom: `بناءً على خبرتي كمستشار، أنصحك بأن تركز على ثلاث نقاط أساسية:
+<ul class="list-disc pl-5">
+  <li>تحديد الأهداف بوضوح</li>
+  <li>تطوير خطة عملية قابلة للتنفيذ</li>
+  <li>المتابعة الدورية والتقييم</li>
+</ul>
+تذكر أن الرحلة الألف ميل تبدأ بخطوة، لذا ابدأ بالأهم ثم المهم.`,
+                tranquil: `في هدوء اللحظة الحالية، أود أن أذكرك بأن التوتر والقلق هما جزء طبيعي من التجربة الإنسانية. إليك طريقة بسيطة للتعامل:
+<br><br>
+1. خذ نفساً عميقاً لمدة 4 ثوانٍ<br>
+2. احبس النفس لمدة 4 ثوانٍ<br>
+3. أخرج النفس ببطء لمدة 6 ثوانٍ<br>
+<br>
+كرر هذه العملية 5 مرات وستلاحظ تحسناً في حالتك.`,
+                creative: `لإشعال شرارة الإبداع، جرب هذه الطريقة:
+<br><br>
+<strong>تمرين العصف الذهني:</strong>
+- اكتب كل فكرة تخطر ببالك دون تقييم<br>
+- اخلط بين الأفكار غير المتجانسة<br>
+- تخيل الحل من منظور مختلف تماماً<br>
+<br>
+مثال: تخيل أن الحل سيقدمه طفل في الخامسة من عمره، ماذا سيقول؟`,
+                energy: `🔥 هيا نبدأ! إليك خطة الطاقة:
+<br><br>
+<strong>خطة العمل:</strong>
+1. ابدأ الآن - لا تؤجل<br>
+2. قسم المهمة إلى خطوات صغيرة<br>
+3. كافئ نفسك بعد كل إنجاز<br>
+4. تحرك بسرعة وثقة<br>
+<br>
+<em>تذكر: الطاقة تولد الطاقة!</em>`
+            };
+            
+            return responses[mood] || `أهلاً بك! بناءً على حالتك المزاجية، سأقدم لك الإجابة الأنسب. هذا مثال على استجابة في وضع ${moodConfigs[mood].name}.`;
+        }
+
+        // Update send button state
+        function updateSendButton() {
+            const sendBtn = document.getElementById('send-btn');
+            if (isThinking) {
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<span>جاري المعالجة</span> <span class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span>';
+            } else {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<span>إرسال</span> <span>🚀</span>';
+            }
+        }
+
+        // Clear chat
+        function clearChat() {
+            const container = document.getElementById('chat-container');
+            container.innerHTML = `
+                <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                    <div class="animate-pulse-slow">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-ai-blue to-ai-purple rounded-full flex items-center justify-center">
+                            <span class="text-white text-2xl">🤖</span>
+                        </div>
+                        <p class="text-lg">مرحباً، أنا شريكك في الذكاء الاصطناعي</p>
+                        <p class="text-sm mt-2">اكتب سؤالك أو موضوعك وسأقدم لك تحليلاً عميقاً ونصائح مفيدة</p>
+                    </div>
+                </div>
+            `;
+            
+            chatHistory = [];
+            currentMood = null;
+            document.getElementById('current-mood').textContent = 'غير محددة';
+            document.getElementById('mood-description').textContent = 'اختر حالتك المزاجية لبدء تجربة مخصصة';
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('bg-opacity-100', 'text-white');
+            });
+            
+            showToast('تم مسح المحادثة', '🧹');
+        }
+
+        // Save chat to localStorage
+        function saveChat() {
+            if (chatHistory.length === 0) {
+                showToast('لا توجد محادثة لحفظها', 'ℹ️');
+                return;
+            }
+            
+            const chatData = {
+                history: chatHistory,
+                mood: currentMood,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ai_chat_saved', JSON.stringify(chatData));
+            showToast('تم حفظ المحادثة بنجاح', '💾');
+        }
+
+        // Load chat from localStorage
+        function loadChat() {
+            const savedChat = localStorage.getItem('ai_chat_saved');
+            if (!savedChat) {
+                showToast('لا توجد محادثة محفوظة', 'ℹ️');
+                return;
+            }
+            
+            try {
+                const chatData = JSON.parse(savedChat);
+                clearChat();
+                
+                // Set mood
+                if (chatData.mood) {
+                    setMood(chatData.mood);
+                }
+                
+                // Restore messages
+                const container = document.getElementById('chat-container');
+                container.innerHTML = '';
+                
+                chatData.history.forEach(msg => {
+                    showMessage(msg.sender, msg.content, msg.type);
+                });
+                
+                showToast('تم تحميل المحادثة بنجاح', '📂');
+            } catch (e) {
+                showToast('حدث خطأ في تحميل المحادثة', '❌');
+            }
+        }
+
+        // Load example conversation
+        function loadExample(num) {
+            clearChat();
+            
+            const examples = [
+                {
+                    mood: 'wisdom',
+                    question: 'كيف أطور مهاراتي القيادية؟',
+                    response: 'تطوير المهارات القيادية رحلة متعددة الأبعاد. إليك أهم النقاط:<br><br><ul class="list-disc pl-5"><li>ابدأ بفهم نفسك: نقاط قوتك وضعفك</li><li>تعلم من القادة الملهمين</li><li>طور مهارات التواصل الفعال</li><li>كن قدوة في الأخلاق والتفاني</li><li>تقبل المسؤولية واتخذ القرارات</li></ul><br>القيادة ليست منصباً بل سلوكاً وممارسة يومية.'
+                },
+                {
+                    mood: 'creative',
+                    question: 'أحتاج أفكاراً لرواية خيالية',
+                    response: 'فكرة رواية ممتازة! كيف عن هذه الفكرة:<br><br><strong>عالم الألوان الناطقة:</strong><br>في عالم حيث الألوان تتحدث وتؤثر على المشاعر، يكتشف البطل أنه الوحيد الذي يرى الألوان دون سماعها. عندما تبدأ الألوان بالاختفاء واحداً تلو الآخر، يجب أن يعرف السبب قبل أن يفقد العالم ألوانه إلى الأبد.<br><br>الرمزية: تمثل الألوان جوانب المشاعر الإنسانية، والاختفاء يمثل خسارة الإنسان لطبيعته في العالم الحديث.'
+                },
+                {
+                    mood: 'tranquil',
+                    question: 'كيف أتخلص من التوتر؟',
+                    response: 'للتخلص من التوتر، جرب هذه النصائح العملية:<br><br>1. خصص 5 دقائق يومياً للتنفس العميق والتركيز على الحاضر<br>2. اكتب ما يقلقك على ورقة ثم مزقها رمزياً<br>3. مارس المشي في الطبيعة دون هاتف<br>4. استمع إلى أصوات الطبيعة أو موسيقى هادئة<br>5. تقبل أن بعض الأمور خارجة عن سيطرتك<br><br>تذكر أن التوتر زائر مؤقت، لا تجعله مقيمًا دائمًا في عقلك.'
+                }
+            ];
+            
+            const ex = examples[num - 1];
+            setMood(ex.mood);
+            showMessage('user', ex.question, 'user');
+            
+            setTimeout(() => {
+                showMessage('ai', ex.response, 'ai');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
+ 
+import streamlit as st
+import spotipy  # مكتبة لـ Spotify API
+from spotipy.oauth2 import SpotifyClientCredentials
+
+# إعداد API (استبدل بمعلوماتك)
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="YOUR_CLIENT_ID", client_secret="YOUR_CLIENT_SECRET"))
+
+def play_music(query, mood):
+    results = sp.search(q=query + " " + mood, type='track')
+    track = results['tracks']['items'][0]
+    st.audio(track['preview_url'])  # تشغيل معاينة
+
+# في الواجهة
+mood = st.selectbox("اختر حالة: ", ["راحة واسترخاء", "حماس ونشاط"])
+query = st.text_input("ابحث عن موسيقى:")
+if st.button("تشغيل"):
+    play_music(query, mood)
+ 
+ 
+import streamlit as st
+from transformers import pipeline  # لتحليل المزاج
+
+sentiment = pipeline('sentiment-analysis')
+
+def auto_music(user_input):
+    analysis = sentiment(user_input)[0]
+    if analysis['label'] == 'NEGATIVE':  # تعب أو حزن
+        return "relaxing_music_url"  # رابط موسيقى هادئة
+    else:
+        return "energetic_music_url"  # رابط موسيقى نشيطة
+
+user_input = st.text_input("اكتب شيئًا:")
+music_url = auto_music(user_input)
+if st.checkbox("تشغيل موسيقى خلفية تلقائية"):
+    st.audio(music_url, format='audio/mp3')
+# للتفاعل مع الألوان: st.markdown("<style>body {background-color: lightblue;}</style>", unsafe_allow_html=True)  # تغيير حسب الموسيقى
+
+
